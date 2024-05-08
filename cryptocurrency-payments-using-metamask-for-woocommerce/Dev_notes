@@ -1,0 +1,217 @@
+@nico
+
+lo que escribo me modifica a mi.
+lo que publico en el mercado modifica a todo lo demas.
+tiene que producir lo correcto.
+
+
+
+code mark ups:
+    ng_chain
+    ng_coin
+    
+// [ ] current
+
+// run process
+
+// start 
+adming/options-settings.php (set the consfig)
+creo el cpmw_settings;
+line 113 add the coins there. => (seteo las monedas);
+
+// start
+(connection between the two files => [options-settings.php > process-order.php] )
+options-settings.php line 5:  $prefix = "cpmw_settings"; 
+(in the other file) >
+includes/html/process-order.php line 9: $options = get_option('cpmw_settings');
+// end
+
+// start
+includes/html/process-order.php
+line 24: // Determine crypto currency based on network
+$crypto_currency = ($network == '0x1' || $network == '0x5') ? $options["eth_select_currency"] : $options["bnb_select_currency"];
+
+
+// start
+line 36: // Get additional network and token information
+
+line 37: $add_tokens = $this->cpmw_add_tokens();
+// this line defined the function add_token for add the right token address in the transaction signature; 
+
+// continue: includes/helpers/cpmw-helper-functions.php
+line 95: //Add custom tokens for networks (in this line are the address and symbol for each token)
+protected function cpmw_add_tokens()
+    return: $tokens // an array of maps index chaint_id = map(coin_symbol => address);
+    
+// continue: includes/html/process-order.php
+line 40: $token_address = isset($add_tokens[$network][$currency_symbol]) ? $add_tokens[$network][$currency_symbol] : '';
+// tokens[network] = network_array_position[currency_symbol] = '0x55d398326f99059fF775485246999027B3197955'
+// $token_address holds the coin address
+
+// what is this ?
+$sig_token_address = $order->get_meta('cpmwp_contract_address');
+// ...
+
+[ ] continue with this question:
+1. se setean los tokens en el admin con los symbols search ng_coin for modified
+2. se toman los seting desde db en el process-order
+3. se determina la network
+4. get the token address
+5. whats now? how the plugin makes the transaction?
+...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+backup: data_raw
+
+
+protected function cpmw_migrate_settings()
+
+    whats is the  get_option();
+    use: $woocommerce_settings = get_option('woocommerce_cpmw_settings');
+
+
+    line 257: $codestar_options['Chain_network'] = $woocommerce_settings['Chain_network']; // ng_cahin
+    line 260: $codestar_options['bnb_select_currency'] = $woocommerce_settings['bnb_select_currency']; // ng_ coin
+
+
+
+cpmw_currencyBUSD
+cpmw_currencyUSDT
+
+class Cpmw_metamask_list extends WP_List_Table
+
+$network_array = $this->cpmwp_get_active_networks_for_currency($symbol);
+
+
+includes/html/cpmw-checkout-fields.php
+1 // aca se cargan la transaccion hasta donde se.
+
+    line 67: // Determine crypto currency based on network
+    $crypto_currency = ($get_network == '0x1' || $get_network == '0x5' || $get_network == '0xaa36a7') ?
+    $options["eth_select_currency"] : $options["bnb_select_currency"];
+
+    line 6: // Get plugin options
+    $options = get_option('cpmw_settings');
+    
+    line 20: // Get currency options
+    $bnb_currency = $options['bnb_select_currency'];
+    $eth_currency = $options['eth_select_currency'];
+
+    line 96: // Localize the connect wallet script with required data
+    wp_localize_script('cpmw_connect_wallet', "connect_wallts", array(
+        'total_price' => $total_price,
+        'api_type' => $type,
+        'decimalchainId' => isset($get_network) ? hexdec($get_network) : false,
+        'active_network' => isset($get_network) ? $get_network : false,
+        'nonce' => wp_create_nonce('wp_rest'),
+        'restUrl' => get_rest_url() . 'pay-with-metamask/v1/',
+        'currency_lbl' => $select_currency_lbl,
+        'const_msg' => $const_msg,
+        'networkName' => $network_name[$get_network],
+        'enabledCurrency' => $enabledCurrency,
+    ));
+    
+    
+
+admin/option-setings.php
+aparentemente aca se setean las chains desde admin, pero que le abisa a metamask que sea asi ?
+
+
+    line 69:
+     array(
+            'id' => 'Chain_network',
+            'title' => esc_html__('Select Network/Chain', 'cpmw'),
+            'type' => 'select',
+            'options' => array(
+                '0x1' => __('Ethereum Mainnet (ERC20)', 'cpmw'),
+                '0xaa36a7' => __('Ethereum Sepolia (Testnet)', 'cpmw'),
+                '0x5' => __('Ethereum Goerli (Testnet)', 'cpmw'),
+                '0x38' => __('Binance Smart Chain (BEP20)', 'cpmw'),
+                '0x61' => __('Binance Smart Chain (Testnet)', 'cpmw'),
+                'avalanche' => __('Avalanche (Pro)', 'cpmw'),
+                'polygon' => __('Polygon Mainnet (Pro)', 'cpmw'),
+                'custom' => __('Any Custom Network (Pro)', 'cpmw'),
+            ),
+
+    array(
+        'id' => 'eth_select_currency',
+        'title' => __('Select Crypto Currency <span style="color:red">(Required )</span>', 'cpmw'),
+        'type' => 'select',
+        'validate' => 'csf_validate_required',
+        'placeholder' => 'Select Crypto currency',
+        'options' => array(
+            'ETH' => __('Ethereum', 'cpmw'),
+            'USDT' => __('USDT', 'cpmw'),
+        ),
+        'chosen' => true,
+        'multiple' => true,
+        'settings' => array('width' => '50%'),
+        'dependency' => array('Chain_network', 'any', '0x1,0x5,0xaa36a7'),
+        'desc' => '<span >You can add any custom token/coin in pro version. <a href="' . CPMW_BUY_PRO . '" target="_blank"> (Buy Pro) </a></span>',
+        'default' => 'ETH',
+
+    ),
+    array(
+        'id' => 'bnb_select_currency',
+        'title' => __('Select Crypto Currency <span style="color:red">(Required )</span>', 'cpmw'),
+        'type' => 'select',
+        'placeholder' => 'Select Crypto Currency',
+        'validate' => 'csf_validate_required',
+        'options' => array(
+            'BNB' => __('Binance Coin', 'cpmw'),
+            'BUSD' => __('BUSD', 'cpmw'),
+        ),
+        'chosen' => true,
+        'multiple' => true,
+        'settings' => array('width' => '50%'),
+        'dependency' => array('Chain_network', 'any', '0x38,0x61'),
+        'desc' => '<span >You can add any custom token/coin in pro version. <a href="' . CPMW_BUY_PRO . '" target="_blank"> (Buy Pro) </a></span>',
+        'default' => 'BNB',
+    ),
+    
+    
+includes/cpmw-functions.php
+
+function cpmw_payment_verify() // este verifica el payment;
+
+
+includes/class-rest-api.php
+// Get network on selected coin base
+public function get_selected_network($request)
+
+
+includes/html/cpmw-process-order.php // lo mas probable es que sea aca 
+line 30: $nonce = wp_create_nonce('cpmw_metamask_pay'.$order_id);
+
+line 43: // Generate signature for transaction request
+$secret_key = $this->cpmw_get_secret_key();
+$tx_req_data = json_encode(
+    array(
+        'order_id' => $order_id,
+        'selected_network' => $network,
+        'receiver' => strtoupper($user_wallet),
+        'amount' => str_replace(',', '', $in_crypto),
+        'token_address' => strtoupper($sig_token_address)
+    )
+);

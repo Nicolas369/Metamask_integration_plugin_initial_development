@@ -109,7 +109,7 @@ function cmp_metamask(price, user_val, provider, accounts) {
     const yourAddress = user_account;  
     const value = ethers.utils.parseEther(price)._hex;       
         const confirm_payment = document.createElement('div')
-        confirm_payment.innerHTML = extradata.in_crypto + extradata.currency_symbol
+        confirm_payment.innerHTML = extradata.in_crypto + extradata.currency_symbol // drop down field
         Swal.fire({
             title: extradata.const_msg.confirm_order,
             html: confirm_payment,
@@ -279,6 +279,7 @@ async function cpmw_change_network(chain_id) {
         // handle other "switch" errors
     }
 }
+
 //Popup user login for metamask
 async function cmp_connect(custom_price, recever, provider, network) {
     Swal.close()
@@ -422,7 +423,9 @@ async function cpmw_send_token(contract_address, send_token_amount, to_address, 
                 const decimals = await contract.decimals();               
             // Get the balance of the wallet before the transfer
                 var targetAddress = to_address;
-                var amount = ethers.utils.parseUnits(send_token_amount, decimals);              
+                var amount = ethers.utils.parseUnits(send_token_amount, decimals);
+                console.log('send_token_amount, decimals ', send_token_amount, decimals)
+                console.log(amount)    
                 let befyblc = await contract.balanceOf(userAddress).then(function (balance) {                   
                     var text = ethers.utils.formatUnits(balance,decimals);                                
                     if (Number(text) >= send_token_amount) {                 
@@ -523,5 +526,3 @@ async function cpmw_send_token(contract_address, send_token_amount, to_address, 
      
   
 }
-
-

@@ -18,8 +18,8 @@ trait CPMW_HELPER
         return get_option('cpmwp_secret_key');
     }
 
+    // @nico to-do
     //Price conversion API start
-
     protected function cpmw_price_conversion($total, $crypto, $type)
     {
         global $woocommerce;
@@ -40,14 +40,14 @@ trait CPMW_HELPER
         } else {
             $price_list = CPMW_API_DATA::cpmw_openexchangerates_api();
 
-            if (isset($price_list->error)&& $currency != 'USD') {
+            if (isset($price_list->error) && $currency != 'USD') {
                 return array('error' => $price_list->description);
             }
 
             $price_array =  ($currency != 'USD') ? (array) $price_list->rates : '';
             $current_rate = ($currency != 'USD') ? $price_array[$currency] : 1;
           
-            if ($crypto == "USDT"||$crypto == "BUSD") {
+            if ($crypto == "USDT" || $crypto == "USDC" || $crypto == "BUSD") { // [ ] change for usdc
                 $current_price_USDT = CPMW_API_DATA::cpmw_crypto_compare_api($currency, $crypto);
                 $current_price_array_USDT = (array) $current_price_USDT;
 
@@ -84,20 +84,20 @@ trait CPMW_HELPER
         }
     }
 
-//Price conversion API end here
-
+    //Price conversion API end here
     protected function cpmw_supported_currency()
     {
         $oe_currency = array("AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN", "BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL", "BSD", "BTC", "BTN", "BWP", "BYN", "BZD", "CAD", "CDF", "CHF", "CLF", "CLP", "CNH", "CNY", "COP", "CRC", "CUC", "CUP", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EGP", "ERN", "ETB", "EUR", "FJD", "FKP", "GBP", "GEL", "GGP", "GHS", "GIP", "GMD", "GNF", "GTQ", "GYD", "HKD", "HNL", "HRK", "HTG", "HUF", "IDR", "ILS", "IMP", "INR", "IQD", "IRR", "ISK", "JEP", "JMD", "JOD", "JPY", "KES", "KGS", "KHR", "KMF", "KPW", "KRW", "KWD", "KYD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRO", "MRU", "MUR", "MVR", "MWK", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLL", "SOS", "SRD", "SSP", "STD", "STN", "SVC", "SYP", "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VES", "VND", "VUV", "WST", "XAF", "XAG", "XAU", "XCD", "XDR", "XOF", "XPD", "XPF", "XPT", "YER", "ZAR", "ZMW", "ZWL");
         return $oe_currency;
     }
 
-//Add custom tokens for networks
+    // @nico: to-do
+    //Add custom tokens for networks
     protected function cpmw_add_tokens()
     {
         $tokens = [];
 
-        $tokens['0x1'] = array(
+        $tokens['0x1'] = array( // usdt ethereum;
             'USDT' => '0xdac17f958d2ee523a2206206994597c13d831ec7',
         );
         $tokens['0xaa36a7'] = array(
@@ -106,49 +106,56 @@ trait CPMW_HELPER
         $tokens['0x5'] = array(
             'USDT' => '0xed52BeD8031D4433A49cDEA6f74F1cd2e25ea7b8',
         );
-
         $tokens['0x38'] = array(
             'BUSD' => '0xe9e7cea3dedca5984780bafc599bd69add087d56',
         );
         $tokens['0x61'] = array(
             'BUSD' => '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee',
         );
-
+        $tokens['0x38'] = array( // @nico b20 addition;
+            'USDT' => '0x55d398326f99059ff775485246999027b3197955',
+        );
+        $tokens['0x38'] = array( // @nico b20 addition;
+            'USDC' => '0x8965349fb649A33a30cbFDa057D8eC2C48AbE2A2',
+        );
+        
         return $tokens;
 
     }
 
+    // @nico to-do add more networks 
     //Add network names here
     protected function cpmw_get_explorer_url()
     {
         $explorer = [];
         $explorer = array(
-            '0x61' => 'https://testnet.bscscan.com/',
-            '0x38' => 'https://bscscan.com/',
-            '0x1' => 'https://etherscan.io/',
-            '0x5' => 'https://goerli.etherscan.io/',
-            '0xaa36a7' => 'https://sepolia.etherscan.io/',
+            '0x61'      => 'https://testnet.bscscan.com/',
+            '0x38'      => 'https://bscscan.com/',
+            '0x1'       => 'https://etherscan.io/',
+            '0x5'       => 'https://goerli.etherscan.io/',
+            '0xaa36a7'  => 'https://sepolia.etherscan.io/',
         );
 
         return $explorer;
-
     }
 
+    // @nico to-do add the name here 
     //Add network names here
     protected function cpmw_supported_networks()
     {
         $networks = [];
         $networks = array(
-            '0x1' => __('Ethereum Mainnet (ERC20)', 'cpmw'),
-            '0xaa36a7' => __('Ethereum Sepolia (Testnet)', 'cpmw'),
-            '0x5' => __('Ethereum Goerli (Testnet)', 'cpmw'),
-            '0x38' => __('Binance Smart Chain (BEP20)', 'cpmw'),
-            '0x61' => __('Binance Smart Chain (Testnet)', 'cpmw'),
+            '0x1'       => __('Ethereum Mainnet (ERC20)', 'cpmw'),
+            '0xaa36a7'  => __('Ethereum Sepolia (Testnet)', 'cpmw'),
+            '0x5'       => __('Ethereum Goerli (Testnet)', 'cpmw'),
+            '0x38'      => __('Binance Smart Chain (BEP20)', 'cpmw'),
+            '0x61'      => __('Binance Smart Chain (Testnet)', 'cpmw'),
         );
 
         return $networks;
 
     }
+
     protected function cpmwp_get_active_networks_for_currency($currencySymbol)
     {
         $options = get_option('cpmw_settings');

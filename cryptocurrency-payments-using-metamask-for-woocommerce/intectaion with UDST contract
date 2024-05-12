@@ -1,0 +1,107 @@
+const getBalance = async () => {
+    const ethers = window.ethers;
+    
+    try{
+        
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            console.log(provider);
+        
+            accounts = await provider.listAccounts();
+            console.log(accounts);
+        
+            const network = await provider.getNetwork();
+            console.log(network);
+            
+            var abi = [
+                "function name() view returns (string)",
+                "function symbol() view returns (string)",
+                "function gimmeSome() external",
+                "function balanceOf(address _owner) public view returns (uint256 balance)",
+                "function transfer(address _to, uint256 _value) public returns (bool success)",
+                "function decimals() view returns (uint256)",
+            ];               
+              
+                const signer = provider.getSigner();
+                let userAddress = await signer.getAddress();           
+                var address = contract_address;
+                var contract = new ethers.Contract(address, abi, signer);   
+                var secret_code = ""         
+            
+            // Listen for Transfer events (triggered after the transaction)
+                
+            contract.ontransfer = function (from, to, amount) {
+                var text = ethers.utils.formatEther(amount);                                         
+            }
+            
+            
+             const decimals = await contract.decimals();
+        
+            // Get the balance of the wallet before the transfer
+            var targetAddress = to_address;
+            var amount = ethers.utils.parseUnits(send_token_amount, decimals);
+        
+            console.log('send_token_amount, decimals ', send_token_amount, decimals)
+            console.log(amount)   
+        
+            let befyblc = await contract.balanceOf(userAddress).then(function (balance) {                   
+            var text = ethers.utils.formatUnits(balance,decimals);  
+                console.log(befyblc);
+                console.log(text);
+                console.log(balance);
+            })
+                                                                     
+    } catch (e) {
+        console.log(e);
+    }
+        
+        return;
+}
+
+
+
+const getEthersPackage = () => {
+}
+
+const getUSDTbalance = async () => {
+    const script = document.createElement('script');
+    script.src="https://cdn.ethers.io/scripts/ethers-v3.min.js"
+    script.charset="utf-8"
+    script.type="text/javascript"
+    document.head.appendChild(script);   
+    
+    
+    try {
+        const ethers = window.ethers;
+        
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        console.log(provider);
+        
+        // list connected wallets
+        accounts = await provider.listAccounts();
+        
+        // interaction with the contract
+        const USDT_ABI = [
+            // BEP20 standard methods
+            "function balanceOf(address account) external view returns (uint256)",
+        ];
+
+        const BSCprovider = new ethers.providers.JsonRpcProvider('https://bsc-dataseed1.binance.org/'); // Use a BSC RPC endpoint
+        const usdtContractAddress = '0x55d398326f99059ff775485246999027b3197955'; // USDT contract address on BSC
+        const usdtContract = new ethers.Contract(usdtContractAddress, USDT_ABI, BSCprovider);
+
+        const clientAddress = accounts[0];
+
+        const balanceUSDT = await usdtContract.balanceOf(clientAddress)            
+        console.log(`USDT balance for address ${clientAddress}: ${ethers.utils.formatUnits(balanceUSDT, 18)}`);
+        return balanceUSDT;
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
+
+getUSDTbalance();
+
+getEthersPackage();
+await getBalance();
+

@@ -57,6 +57,8 @@ if (!class_exists('CPMW_CONFIRM_TRANSACTION')) {
                 wp_send_json_error('Signature verification unsuccessful: Transaction data is invalid.');
             }
 
+            // ***** validations ***** //
+            
             // Retrieve the order
             $order = wc_get_order($order_id);
 
@@ -77,6 +79,9 @@ if (!class_exists('CPMW_CONFIRM_TRANSACTION')) {
                 $order->update_status('wc-cancelled', __('Order canceled because of incorrect order information.', 'cpmw'));
                 wp_send_json_error('Order canceled because of incorrect order information.');
             }
+            
+            // ***** ends validations ***** //
+
 
             // Prepare transaction information
             $transaction = [];
@@ -106,8 +111,7 @@ if (!class_exists('CPMW_CONFIRM_TRANSACTION')) {
                         $link_hash = '<a href="https://etherscan.io/tx/' . $tx_id . '" target="_blank">' . $tx_id . '</a>';
                     } elseif ($selected_network == '0x5') {
                         $link_hash = '<a href="https://goerli.etherscan.io/tx/' . $tx_id . '" target="_blank">' . $tx_id . '</a>';
-                    }
-                    elseif ($selected_network == '0xaa36a7') {
+                    } elseif ($selected_network == '0xaa36a7') {
                         $link_hash = '<a href="https://sepolia.etherscan.io/tx/' . $tx_id . '" target="_blank">' . $tx_id . '</a>';
                     }
 
@@ -138,7 +142,7 @@ if (!class_exists('CPMW_CONFIRM_TRANSACTION')) {
                         'is_paid' => ($order->get_status() == "on-hold" && !empty($tx_id)) ? true : $order->is_paid(),
                         'order_status' => $order->get_status(),
                     ];
-                    echo json_encode($data);
+                    echo json_encode($data); // this send the json_data to the client
                     $db = new CPMW_database();
                     $db->cpmw_insert_data($transaction);
                     die();
@@ -292,3 +296,4 @@ if (!class_exists('CPMW_CONFIRM_TRANSACTION')) {
 
     }
 }
+ 

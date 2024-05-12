@@ -1,0 +1,202 @@
+@nico
+
+3 little and clear modifications and the plugin is completed;
++△: quick and effective;
++△: the tokens are integrated;
++△: elevar mi capital;
+
+
+for a token you have a bag, a phone, a watch, a fisical product.
+have capitalism and what you want.
+
+code mark ups:
+    * ng_chain
+    * ng_coin
+    
+// [ ] current
+
+/**
+ * run process for perform a trnsaction.
+ */
+
+// start
+    adming/options-settings.php (set the consfig)
+    creo el cpmw_settings;
+    line 113 add the coins there. => (seteo las monedas: user-side);
+    //end file
+
+// start
+    * connection between the two files:     [options-settings.php > process-order.php]
+    adming/options-settings.php             line 5: $prefix = "cpmw_settings"; 
+    includes/html/process-order.php         line 9: $options = get_option('cpmw_settings');
+    //end file
+
+// start
+    [includes/html/process-order.php]
+    line 24: // Determine crypto currency based on network
+    line 25:
+    
+        $crypto_currency = ($network == '0x1' || $network == '0x5') 
+            ? $options["eth_select_currency"] 
+            : $options["bnb_select_currency"];
+
+    /**
+     * network change option.
+     * in the future think in add more network potions.
+     *
+     * i can't know what is going to be the coin that the user have,
+     * so i have to add all that is posible. 
+     */
+    
+    //end file
+
+
+// start
+    line 36: // Get additional network and token information
+
+    line 37: $add_tokens = $this->cpmw_add_tokens();
+    // this line defined the function add_token for add the right token address in the transaction signature; 
+
+    // continue: includes/helpers/cpmw-helper-functions.php
+    line 95: //Add custom tokens for networks (in this line are the addresses and symbols for each token)
+    
+    /**
+     * here is where i have to add the corresponding token
+     */
+    line 96: protected function cpmw_add_tokens()
+    return: $tokens // an array of maps index chaint_id = map(coin_symbol => address);
+        
+    // continue: includes/html/process-order.php
+    line 40: $token_address = isset($add_tokens[$network][$currency_symbol]) ? $add_tokens[$network][$currency_symbol] : '';
+    // tokens[network] = network_array_position[currency_symbol] = '0x55d398326f99059fF775485246999027B3197955'
+    // [!important]: $token_address holds the coin address
+
+    // what is this ?
+    $sig_token_address = $order->get_meta('cpmwp_contract_address');
+
+    // The pocess continues and i dont found the function of the transacction i have to go more deep
+    // But o found something amazing the place where i have to modify to include more tokens
+    // and in the future more networkts
+    // end of analysis.
+
+conclution:
+    1. se setean los tokens en el admin con el symbol correspondiente, (search ng_coin for modified)
+    2. se toman los seting desde db en el process-order
+    3. se determina la network
+    4. get the token address [here]
+    5. ...
+
+    research-note:
+        i don't find the specific connection with the w3w <> plugin <> BlockC
+        my thought is that occurse in the compile files of assets/build folder.
+        But i found the way of modify the coins in the plugin to add or remove the default selection.
+
+
+
+extra:
+
+    [admin/cpmw-woo-payment-gateway]
+        
+        line 113:  public function process_payment($order_id)
+        line 121: $crypto_wallet = 
+            !empty($_POST['cpmwp_crypto_wallets']) ? sanitize_text_field($_POST['cpmwp_crypto_wallets']) : 'ethereum';
+
+            dev: revisar si se pueden incorporar mas wallets desde -> sanitize_text_field($_POST['cpmwp_crypto_wallets'])
+
+            analysed: !empty($_POST['cpmwp_crypto_wallets']) this chacks if the field is empty so it doesn't there,
+            is in the premium vertion so i can modify this for the wallet inclution latter.
+
+        line 139:  $url = $order->get_checkout_payment_url(true); this cleans the checkout and redirect to the orderpage.
+        // stop analysis;
+
+
+    [includes/serverside-processing/confirm-transaction]
+        
+        line 15: public static function cpmw_payment_verify()
+        line 27: 
+            $options_settings = get_option('cpmw_settings');
+            $user_address = !empty($options_settings["user_wallet"]) ? $options_settings["user_wallet"] : "";
+            this "$options_settings" have the options set in admin
+            this "user_address" have my address w3w 
+
+        line 30: gets the necessary DATA 
+        line 44:  Verify signature study this.
+
+
+______________________________________________________________________________________________________________________
+
+work:
+    
+    funtions to modified:
+    
+        options-settings:
+            line 113: add coin symblos in options 
+    
+        hellpers:
+            cpmw_price_conversion // done
+            cpmw_add_tokens add the token: symbol => addres // done
+    
+    hellpers file: @nico to-do => 3 // future additions
+    
+
+
+modifications: 
+    
+    tokens to include:
+        * DAI: A decentralized stablecoin on the Ethereum blockchain, maintained and regulated by the MakerDAO project. It's not pegged to any fiat currency directly but stabilized through over-collateralization.
+        * Tether (USDT): One of the most widely used stablecoins, pegged to the US dollar.
+        * USD Coin (USDC): A stablecoin pegged to the US dollar, developed by Centre, a consortium founded by Coinbase and Circle.
+    
+        in-the: Binence Smarth Chain
+        
+    [x] get token address and symbol
+    [X] include in the cpmw_price_conversion line-23
+    [x] cpmw_add_tokens add the tokens in the php.array that is a map
+    [x] add tokens in admin side
+ 
+ 
+    result:
+
+        in this: '0x38' => __('Binance Smart Chain (BEP20)', 'cpmw'),
+
+        tokens: array (
+            'symbol' => 'addess',
+            'USDT' => '0x55d398326f99059ff775485246999027b3197955',
+            'USDC' => '0x8965349fb649A33a30cbFDa057D8eC2C48AbE2A2'
+        )
+
+
+
+    BEP20: 
+        'USDT' => '0x55d398326f99059ff775485246999027b3197955'
+        
+            bscSacan_1: 0x63b7e5aE00cc6053358fb9b97B361372FbA10a5e
+            cahtgpt: 0x55d398326f99059fF775485246999027B3197955
+            bscSacan_2: 0x55d398326f99059fF775485246999027B3197955
+            other: 0x55d398326f99059ff775485246999027b3197955
+
+            3 vs 1 wins 55.55
+            la ultima verdad la tiene el vivo.
+
+        'USDC' => '0x8965349fb649A33a30cbFDa057D8eC2C48AbE2A2'
+    
+            bscScan: 0x8965349fb649A33a30cbFDa057D8eC2C48AbE2A2
+
+    w3-notes: https://explorer.bitquery.io/ 
+        research this chain explorer whats tells you about the movimiento de los tokens.
+        que quiero? tokens, donde esta y como?
+
+    
+
+
+
+    FIX: 
+        [ ] no se conectando el saldo de metamask y el plugin correctamente. Porque?
+
+
+
+
+
+
+
+

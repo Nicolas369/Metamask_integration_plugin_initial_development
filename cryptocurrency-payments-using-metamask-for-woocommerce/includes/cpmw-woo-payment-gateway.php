@@ -159,7 +159,5 @@ class WC_cpmw_Gateway extends WC_Payment_Gateway
         } else {
             require_once CPMW_PATH . 'includes/html/cpmw-process-order.php';
         }
-      
-
     }
 }

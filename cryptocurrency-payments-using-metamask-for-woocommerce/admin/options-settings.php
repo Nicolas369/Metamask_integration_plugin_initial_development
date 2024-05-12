@@ -108,10 +108,12 @@ if (class_exists('CSF')):
                 'type' => 'select',
                 'placeholder' => 'Select Crypto Currency',
                 'validate' => 'csf_validate_required',
-                'options' => array(
-                    'BNB' => __('Binance Coin', 'cpmw'),
+                'options'  => array(
+                    'BNB'  => __('BNB Binance Coin', 'cpmw'),
+                    'USDT' => __('USDT', 'cpmw'),
+                    'USDC' => __('USDC', 'cpmw'),
                     'BUSD' => __('BUSD', 'cpmw'),
-                    // ng_coin
+                    // @nico: ng_coin
                 ),
                 'chosen' => true,
                 'multiple' => true,

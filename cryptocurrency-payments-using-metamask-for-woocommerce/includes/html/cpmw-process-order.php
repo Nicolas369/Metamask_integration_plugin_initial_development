@@ -57,41 +57,43 @@ $signature = hash_hmac('sha256', $tx_req_data, $secret_key);
 $filePaths = glob(CPMW_PATH . '/assets/pay-with-metamask/build/main' . '/*.php');
 $fileName = pathinfo($filePaths[0], PATHINFO_FILENAME);
 $jsbuildUrl=str_replace('.asset','',$fileName);
-//Enqueue required scrips 
+// Enqueue required scrips 
 wp_enqueue_script('cpmw_react_widget', CPMW_URL . 'assets/pay-with-metamask/build/main/'.$jsbuildUrl.'.js', array('wp-element'), CPMW_VERSION, true);
-wp_localize_script('cpmw_react_widget', "extradataRest",
+
+wp_localize_script( 'cpmw_react_widget', "extradataRest",
     array(
-        'url' => CPMW_URL,
-        'supported_networks' => $network_name,
-        'restUrl' => get_rest_url() . 'pay-with-metamask/v1/',
-        'fiatSymbol' => get_woocommerce_currency_symbol(),
-        'totalFiat' => $total,
-        'network_name' => $network_name[$network],
-        'token_address' => $token_address,       
-        'transaction_id' => $transaction_id,
-        'const_msg' => $const_msg,
-        'wallet_image' =>CPMW_URL . 'assets/images/metamask.png',
-        'redirect' => $redirect,
-        'currency_logo'=>$this->cpmw_get_coin_logo($currency_symbol),
-        'order_page' => get_home_url() . '/my-account/orders/',
-        'currency_symbol' => $currency_symbol,
-        'confirm_msg' => $confirm_msg,
-        'block_explorer' => $block_explorer[$network],
-        'network' => $network,
-        'is_paid' => $order->is_paid(),
-        'decimalchainId' => isset($network) ? hexdec($network) : false,
-        'process_msg' => $process_msg,
-        'payment_msg' => $payment_msg,
-        'rejected_msg' => $rejected_msg,
-        'in_crypto' =>str_replace(',', '', $in_crypto),
-        'receiver' => $user_wallet,        
-        'order_status' => $payment_status,
-        'id' => $order_id,
-        'place_order_btn'=>$place_order_button,
-        'nonce' => wp_create_nonce('wp_rest'),
-        'payment_status' => $options['payment_status'],        
-        'signature'          => $signature
+        'url'                   => CPMW_URL,
+        'supported_networks'    => $network_name,
+        'restUrl'               => get_rest_url() . 'pay-with-metamask/v1/',
+        'fiatSymbol'            => get_woocommerce_currency_symbol(),
+        'totalFiat'             => $total, // @nico: fiat
+        'network_name'          => $network_name[$network], // @nico: network
+        'token_address'         => $token_address, // @nico: token    
+        'transaction_id'        => $transaction_id,
+        'const_msg'             => $const_msg,
+        'wallet_image'          => CPMW_URL . 'assets/images/metamask.png',
+        'redirect'              => $redirect,
+        'currency_logo'         => $this->cpmw_get_coin_logo($currency_symbol),
+        'order_page'            => get_home_url() . '/my-account/orders/',
+        'currency_symbol'       => $currency_symbol,
+        'confirm_msg'           => $confirm_msg,
+        'block_explorer'        => $block_explorer[$network],
+        'network'               => $network,
+        'is_paid'               => $order->is_paid(),
+        'decimalchainId'        => isset($network) ? hexdec($network) : false,
+        'process_msg'           => $process_msg,
+        'payment_msg'           => $payment_msg,
+        'rejected_msg'          => $rejected_msg,
+        'in_crypto'             => str_replace(',', '', $in_crypto),
+        'receiver'              => $user_wallet,   // @nico: receiver wallet     
+        'order_status'          => $payment_status,
+        'id'                    => $order_id,
+        'place_order_btn'       => $place_order_button,
+        'nonce'                 => wp_create_nonce('wp_rest'),
+        'payment_status'        => $options['payment_status'],        
+        'signature'             => $signature
     ));
+
 wp_enqueue_style('cpmw_custom_css', CPMW_URL . 'assets/css/style.css', array(), CPMW_VERSION);
 
 $trasn_id=$order->get_meta('TransactionId');
